@@ -24,6 +24,10 @@ class BernoulliBandit(object):
             return 0
         
 class GaussianBandit(object):
+    """Gaussian Bandit, generate reward as a gaussian random variable with mean=mu, variance=sigma**2
+       constructor:
+       GaussianBandit(mu,sigma)
+    """
     def __init__(self,mu=1,sigma=1):
         self.mu=mu
         self.sigma=sigma
