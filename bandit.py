@@ -1,9 +1,3 @@
-
-# coding: utf-8
-
-# In[7]:
-
-
 import random
 class BernoulliBandit(object):
     """Bernoulli Bandit, generate a positive reward R with probability of p
@@ -24,25 +18,21 @@ class BernoulliBandit(object):
             return 0
         
 class GaussianBandit(object):
-    """Gaussian Bandit, generate reward as a gaussian random variable with mean=mu, variance=sigma**2
-       constructor:
-       GaussianBandit(mu,sigma)
-    """
     def __init__(self,mu=1,sigma=1):
         self.mu=mu
         self.sigma=sigma
     
     def pull(self):
         return random.gauss(self.mu,self.sigma)
+
+class MultiArmedBandit(object):
+    """A collection of bandits. Use an object of this class to feed into agents"""
+    def __init__(self,bandits=None):
+        if bandits is None:
+            self.bandits=[]
+        else: self.bandits=bandits
     
-b1=BernoulliBandit(0.5,2)
-b2=GaussianBandit(2,1)
-print b1.pull()
-print b2.pull()
-
-
-# In[3]:
-
-
+    def pull_all(self):
+        return [b.pull() for b in self.bandits ]
 
 
