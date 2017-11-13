@@ -1,4 +1,5 @@
 import random
+
 class BernoulliBandit(object):
     """Bernoulli Bandit, generate a positive reward R with probability of p
     constructor:

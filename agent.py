@@ -1,5 +1,6 @@
 
 import random
+
 class Agent(object):
     """Base class for all agents(algorithms)"""
     def __init__(self,n):
