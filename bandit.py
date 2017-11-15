@@ -35,18 +35,12 @@ class MultiArmedBandit(object):
             self.bandits=[]
         else: 
             self.bandits=bandits
-            self.set_optimal_bandit()
-    def set_optimal_bandit(self):
+            
+    def pull(self, arm_num):
         """sets the optimal(with greatest mean reward)"""
-        optimal=self.bandits[0]
-        for b in self.bandits:
-            if b.action_value>optimal.action_value:
-                optimal=b
-
-        self.optimal_bandit=optimal
-
-
-    def pull_all(self):
-        return [b.pull() for b in self.bandits ]
+        if(arm_num >= len(self.bandits)):
+            raise ValueError
+        else:
+            return self.bandits[arm_num].pull()
 
 

@@ -16,47 +16,61 @@ class EpiGreedy(object):
     def __init__(self, bandit, k = 2, epislon = 1):
         """
         *epislon: parameter for epislon greedy
+        optimal: the arm with the highest mean
         k: amount of arms
-        i: the i-th arm with the highest mean
-        action: times of pulling of every arm
+        total_reward: an analysis of performance
+        actions: times of pulling of every arm
         mius: means of every available arm 
+        bandit: the multiarmed bandit machine
         """
-        self.i = 0
+        self.optimal = 0
         self.k = k
         self.total_reward = 0
         self.actions = np.zeros(k)
-        self.bandit = bandit        
-        self.epislon = epislon       
         self.mius = np.zeros(k)
+        self.bandit = bandit     
         
-    def one_rand(self):
+        self.epislon = epislon       
+
+    def one_play(self):
         '''
         one execution
         '''
         num = np.random.random()
-        if(num > self.epislon):
-            exe = np.argmax(self.mius)
+        if(num < self.epislon):
+            exe = self.optimal
         else:
             exe = np.random.randint(self.k)
-        #get reward adn update data after pull
-        exe = self.one_rand()
-        reward = self.bandit.pull()
+        #pull and get reward
+        reward = self.bandit.pull(exe)
         self.total_reward += reward
+        #update means
         self.mius[exe] = self.mius[exe]*self.actions[exe]
         self.actions[exe] += 1
-        self.mius = (self.mius[exe]+reward)/self.actions[exe]
+        self.mius[exe] = (self.mius[exe]+reward)/self.actions[exe]
+        self.optimal = np.argmax(self.mius)
         return self.total_reward
     
-    def multi_rand(self, times = 1):
+    def play(self, times):
         if times <= 0:
-            raise NotImplementedError
+            raise ValueError
         else:
             for i in range(times):
-                self.one_rand()
+                self.one_play()
+            print(self.actions)
             return self.total_reward, np.argmax(self.mius)
                 
 def bandit_test():
-    bandit_test = bandit.MultiArmedBandit()
+    bandits = []
+    arms = 11
+    for i in range(10):
+        berbandit = bandit.BernoulliBandit(0.5,1)
+        bandits.append(berbandit)
+    berbandit = bandit.BernoulliBandit(0.8,1)
+    bandits.append(berbandit)
+    bandit_test = bandit.MultiArmedBandit(bandits)
+    test = EpiGreedy(bandit_test, arms, 0.1)
+    print(test.play(100))
     return 
 
 if __name__=="__main__":
