@@ -35,7 +35,7 @@
 - [ ] Epsilon First
 - [ ] Epsilon Greedy
 - [ ] Epsilon Decresing
-### UBC
+### Upper Confidence Bound (UCB)
 - [ ] Implementation
 - [ ] Unit Test
 
