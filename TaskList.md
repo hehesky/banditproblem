@@ -29,7 +29,7 @@
   - [x] Initial the type (Bernoulli, Gaussian) and arm numbers
   - [x] Pull one specific arm and return a reward
 
-##Implement Algorithms
+## Implement Algorithms
 
 ### Epsilon Algorithm (X.Sun)
 - [ ] Epsilon First
