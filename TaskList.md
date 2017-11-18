@@ -17,7 +17,6 @@
 - [ ] more....
 
 ## Create Bandit
-
 ### Bandit (K.Zhou)
 - [x] Bernoulli Bandit √
   - [x] Initial the parameters of Bernoulli distribution
@@ -30,18 +29,39 @@
   - [x] Pull one specific arm and return a reward
 
 ## Implement Algorithms
-
-### Epsilon Algorithm (X.Sun)
-- [ ] Epsilon First
+### Bandit strategies
+#### Epsilon Algorithm (semi-uniform) (X.Sun)
+- [ ] Epsilon First (is this comparison basis?)
 - [ ] Epsilon Greedy
-- [ ] Epsilon Decresing
-### Upper Confidence Bound (UCB)
+- [ ] Epsilon Decreasing
+- [ ] Adaptive epsilon-greedy strategy based on value differences (VDBE) (replace epsilon decreasing, based on learning process.)(2010)
+- [ ] Contextual-Epsilon-greedy strategy (2012)
+#### Probability matching strategies (Bayesian sampling)
+#### Pricing strategies
+#### Strategies with ethical constraints
+
+### Contextual bandit
+#### Algotithms
+##### Online linear classifier
+- [ ] UCB
+##### Online non-linear classifier
+- [ ] UCBogram algorithm
+- [ ] NeuralBandit algorithm
+- [ ] KernelUCB algorithm
+- [ ] Bandit Forest algorithm:
+#### Works
 - [ ] Implementation
 - [ ] Unit Test
 
 
 ## Current Test Plan
-* Initial a ten armed Bernoulli Bandit with random distribution, and print the parameters of these bandit
-* Run different algorithms and return reward with the best bandit
+* Initial a ten armed Bernoulli Bandit with same distribution (will test on bernouli and other model)
+* print the parameters of these bandit
+* Rum times [10:100K] in logspace and draw lines (stability benefits...)
+
+## Paper comparison
+* Regression analysis
+* Benefit analysis
+* computing complexity analysis (time and space)
 
 
