@@ -2,19 +2,10 @@
 
 ### Primary Tasks
 - [ ] Implement Every Algorithms
-- [ ] Search for and implement more algorithm(s)
 - [ ] Develope detailed test plans
 - [ ] Analyze results
 - [ ] Draw a conclusion
 - [ ] Write Report/Paper
-
-
-## Algorithms to Implement
-- [ ] epislon greedy
-- [ ] epislon first
-- [ ] epislon decreasing
-- [ ] UCB
-- [ ] more....
 
 ## Create Bandit
 ### Bandit (K.Zhou)
@@ -31,7 +22,7 @@
 ## Implement Algorithms
 ### Bandit strategies
 #### Epsilon Algorithm (semi-uniform) (X.Sun)
-- [ ] Epsilon First (is this comparison basis?)
+- [ ] Epsilon First (comparison basis)
 - [ ] Epsilon Greedy
 - [ ] Epsilon Decreasing
 - [ ] Adaptive epsilon-greedy strategy based on value differences (VDBE) (replace epsilon decreasing, based on learning process.)(2010)
