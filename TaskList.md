@@ -22,8 +22,8 @@
 ## Implement Algorithms
 ### Bandit Setting (X.Sun)
 #### Naive Method
-- [ ] Greedy (A/B testing) (comparison basis)
-- [ ] Epsilon Greedy
+- [x] Greedy (A/B testing) (comparison basis)
+- [x] Epsilon Greedy
 - [ ] Regret Epsilon Greedy: add optimistic initialisation
 - [ ] Epsilon Decreasing
 - [ ] Adaptive epsilon-greedy strategy based on value differences (VDBE) (replace epsilon decreasing, based on learning process.)(2010)
