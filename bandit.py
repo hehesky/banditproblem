@@ -1,4 +1,5 @@
 import random
+import numpy as np
 
 class BernoulliBandit(object):
     """Bernoulli Bandit, generate a positive reward R with probability of p
@@ -36,11 +37,13 @@ class MultiArmedBandit(object):
         else: 
             self.bandits=bandits
             
-    def pull(self, arm_num):
-        """sets the optimal(with greatest mean reward)"""
-        if(arm_num >= len(self.bandits)):
-            raise ValueError
-        else:
-            return self.bandits[arm_num].pull()
+    def pull_all(self):
+        """returns all rewards for one pull"""
+        return [b.pull() for b in self.bandits ]
+    
+    def get_rewards(self, times):
+        """will produce a N*m reward matrix where N is times and m is arms"""
+        rewards = [self.pull_all() for i in range(times)]
+        return np.asarray(rewards)
 
 
