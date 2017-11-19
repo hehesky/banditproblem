@@ -25,7 +25,8 @@
 - [x] Greedy (A/B testing) (comparison basis)
 - [x] Epsilon Greedy
 - [ ] Regret Epsilon Greedy: add optimistic initialisation
-- [ ] Epsilon Decreasing
+- [ ] [Epsilon Decreasing](https://algobeans.com/2016/01/14/how-to-gamble-effectively/)
+        (Main idea: first 100 times random, then for 100+n-th time, epsilon = 1/n)
 - [ ] Adaptive epsilon-greedy strategy based on value differences (VDBE) (replace epsilon decreasing, based on learning process.)(2010)
 #### Other Methods
 - [ ] UCB
