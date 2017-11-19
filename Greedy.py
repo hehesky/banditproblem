@@ -47,9 +47,9 @@ class Greedy(object):
         print(train_times)
         print(test_rewards.shape)
         
-        optimal_arm = np.argmax(self.mius)
-        self.total_reward += np.sum(test_rewards[:,optimal_arm])
-        return self.total_reward, optimal_arm
+        self.optimal = np.argmax(self.mius)
+        self.total_reward += np.sum(test_rewards[:,self.optimal])
+        return self.total_reward, self.optimal
 
 def bandit_test():
     """
