@@ -13,11 +13,10 @@
 - [ ] Build contextual bandit
 ## Implement Algorithms
 - [x] LinUCB
-- [ ] full-information UCB (comparison basis)
-- [ ] LinGreedy
-- [ ] LinPRUCB
-- [ ] Linear Thomson sampling 
-- [ ] relevance vector machines (RVM-LTS)
+- [ ] Thompson Sampling
+- [ ] Statistics
+- [ ] Round Robin Learning
+- [ ] Ensemble Decision (Bagging)
 
 ## Current Test Plan
 * regretion analysis and comparison
