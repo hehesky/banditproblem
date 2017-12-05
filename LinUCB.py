@@ -1,35 +1,36 @@
 import numpy as np
 from numpy.random import choice
-class LinUCB(object):
-    def __init__(self,alpha,d,bandit_num):
-        assert alpha >0
-        assert d>0 and type(d) is int
-        self.bandit_num=bandit_num
-        self.alpha=alpha
-        self.d=d
-        self.A=np.eye(self.d)
-        self.b=np.zeros((self.d,1))
-        self.reward_track=[]
-        
-    
-    def play(self,context,pull_results):
-        
-        assert context.shape==(self.bandit_num,self.d)
-        theta=np.linalg.solve(self.A,self.b)
-        value=np.zeros(self.bandit_num)
-        for a in range(self.bandit_num): #for each action
-            x=context[a].reshape(self.d,1)#x is a column vector
-            ucb_squared=np.dot(x.T,np.linalg.solve(self.A,x))
-            value[a]=np.dot(theta.T,x)+self.alpha*np.sqrt(ucb_squared)
+class LinUCB(object): #with disjoint linear models
+    def __init__(self,bandit_num,feature_size,confidence=1):
+        self.d=bandit_num
+        self.n=feature_size
+        self.A=[np.eye(self.n) for i in range(self.d)]
+        self.b=[np.zeros(self.n) for i in range(self.d)]
+        self.c=confidence
 
-        decision=choice(np.flatnonzero(value == value.max())) #break tie randomly
-        reward=pull_results[decision]
-        if len(self.reward_track) == 0:
-            self.reward_track.append(reward)
-        else:
-            self.reward_track.append(reward+self.reward_track[-1])
+    def learn(self,context,decision,reward):
+        '''Update parameters with [context vector],[decision(article chosen)],[reward(click or not)]'''
+        self.A[decision]+=np.dot(context.reshape((self.n,1)),context.reshape(1,self.n))
+        self.b[decision]+=reward*context
 
-        self.A=self.A+np.dot(context[decision],context[decision].T)
-        self.b=self.b+reward*context[decision].reshape(self.d,1)
+    def predict(self,context):
+        '''Predict which article/bandit is most likely to generate a reward given a context vector(user traits)'''
+        assert len(context)==self.n #for debug
+        p=np.zeros(self.d)
+        for i in range(self.d):
+            
+            theta=np.linalg.solve(self.A[i],self.b[i])#theta=inv(A)*b
+            confidence_bound=self.c*np.sqrt(np.dot(context,np.linalg.solve(self.A[i],context)))
+            p[i]=np.dot(theta.T,context)+confidence_bound
+        decision=choice(np.flatnonzero(p == p.max()))
+        return decision
+
         
 
+if __name__=='__main__':
+    agent=LinUCB(3,3,1)
+    context=np.array([1,2,3])
+    agent.learn(context,1,1)
+    agent.learn(context,0,0)
+    agent.learn(context,2,1)
+    print(agent.predict(context))
