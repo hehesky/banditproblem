@@ -7,13 +7,15 @@ Created on Fri Dec  1 19:36:02 2017
 import numpy as np
 from numpy.random import choice
 class Statistic(object):
-    def __init__(self,feature_num, arm_num):
+    def __init__(self,bandit_num,feature_num):
         self.ft_num = feature_num
-        self.arm_num = arm_num
+        self.arm_num = bandit_num
         self.record = np.ones((self.arm_num, self.ft_num))
         self.ft_count = np.ones(self.ft_num)
         self.arm_count = np.ones(self.arm_num)
         self.count = 2
+        self.total_runs = 0
+        self.total_reward = 0
         
     def learn(self,ft_vec, arm, click):
         ft_vec = np.asarray(ft_vec)
@@ -33,13 +35,21 @@ class Statistic(object):
             prob[i] = np.prod(self.record[i][condition]/self.ft_count[condition])*n_cond_p
         decision=choice(np.flatnonzero(prob == prob.max()))
         return decision
+    
+    def accuracy_update(self, reward):
+        '''
+        update accuracy: after prediction, calculate new average reward
+        '''
+        self.total_runs += 1
+        self.total_reward += reward
+        return self.total_reward/self.total_runs
 
 if __name__=='__main__':
-    agent=Statistic(3,3)
+    agent=Statistic(2,3)
     context=np.array([1,2,3])
     agent.learn(context,1,1)
     agent.learn(context,0,0)
-    agent.learn(context,2,1)
+    agent.learn(context,1,0)
     print(agent.predict(context))
     
     
