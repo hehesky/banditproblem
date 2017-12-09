@@ -10,10 +10,10 @@ class LinUCB(object): #with disjoint linear models
         self.total_runs = 0
         self.total_reward = 0
 
-    def learn(self,context,decision,reward):
-        '''Update parameters with [context vector],[decision(article chosen)],[reward(click or not)]'''
-        self.A[decision]+=np.dot(context.reshape((self.n,1)),context.reshape(1,self.n))
-        self.b[decision]+=reward*context
+    def learn(self,context,aritcleID,reward):
+        '''Update parameters with [context vector],[aritcleID(article chosen)],[reward(click or not)]'''
+        self.A[aritcleID]+=np.dot(context.reshape((self.n,1)),context.reshape(1,self.n))
+        self.b[aritcleID]+=reward*context
 
     def predict(self,context):
         '''Predict which article/bandit is most likely to generate a reward given a context vector(user traits)'''
