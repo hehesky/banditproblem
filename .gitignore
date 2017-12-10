@@ -101,3 +101,4 @@ ENV/
 .mypy_cache/
 
 tmp/
+ydata-fp-td-clicks-v2_0.20111003
