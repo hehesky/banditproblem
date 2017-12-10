@@ -1,5 +1,6 @@
 import numpy as np
-
+import os
+import os.path
 USER_VEC_SIZE=136
 
 def load_data(data_dir):
@@ -21,8 +22,12 @@ def load_data(data_dir):
         pool = [int(i[3:-1]) for i in regions[2:]]
     with open(data_dir) as file:
         for line in file:
+            
             dis, cli, vec = processLine(line)
-            display.append(pool.index(dis))
+            try:
+                display.append(pool.index(dis))
+            except ValueError:
+                continue
             click.append(cli)
             user_vec.append(vec) 
     return display,click,user_vec,pool
@@ -83,17 +88,41 @@ def rewrite(data_dir,i):
             else:
                 wfile.close()
                 return
-    return
+    
+def dump_to_file(display,click,user_vec,pool):
+    if os.path.isdir('tmp') == False:
+        os.mkdir('tmp')
+    display_path=os.path.join('tmp','display')
+    np.save(display_path,display)
 
+    click_path=os.path.join('tmp','click')
+    np.save(click_path,click)
+
+    user_path=os.path.join('tmp','user')
+    np.save(user_path,user_vec)
+
+    pool_path=os.path.join('tmp','pool')
+    np.save(pool_path,pool)
+
+def load_from_dump(base_dir='tmp'):
+    if os.path.isdir(base_dir)==False:
+        raise ValueError("Invalid dump directory")
+    display_path=os.path.join(base_dir,'display.npy')
+    click_path=os.path.join(base_dir,"click.npy")
+    user_path=os.path.join(base_dir,'user.npy')
+    pool_path=os.path.join(base_dir,'pool.npy')
+
+    display=np.load(display_path)
+    click=np.load(click_path)
+    user_vec=np.load(user_path)
+    pool=np.load(pool_path)
+    return display,click,user_vec,pool
 if __name__=='__main__':
 
-    line = '1318722897 id-611110 0 |user 1 6 11 13 33 18 14 39 20 |id-596821 |id-600025 |id-604964 |id-605378 |id-605423 |id-605518 |id-605672 |id-606079 |id-606207 |id-606696 |id-606812 |id-606900 |id-610233 |id-610351 |id-610505 |id-610758 |id-611078 |id-611110 |id-611479 |id-611482 |id-611585 |id-611775 |id-611932 |id-612378 |id-612461 |id-612506 |id-613111 |id-613241 |id-613242 |id-613404 |id-613449 |id-613505 |id-613546 |id-613675 |id-613689 |id-613765 |id-613786'
-    display,click,user_vec=processLine(line)
-    print(display)
-    print(click)
-    print(user_vec)
+    data_dir = "ydata-fp-td-clicks-v2_0.20111003"
+    rewrite(data_dir,200000)
+    display,click,user_vec,pool = load_data("rewrite.txt")
+    dump_to_file(display,click,user_vec,pool)
 
-    data_dir = "data.txt"
-    #rewrite(data_dir,1000)
-    display,click,user_vec,pool = load_data(data_dir)
+    display,click,user_vec,pool=load_from_dump()
     
