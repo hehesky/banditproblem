@@ -16,20 +16,14 @@ def load_data(data_dir):
     click = []
     user_vec = []
     pool = []
-    with open(data_dir) as file:
-        first_line = file.readline()
-        regions=first_line.split('|')
-        pool = [int(i[3:-1]) for i in regions[2:]]
+
     with open(data_dir) as file:
         for line in file:
-            
-            dis, cli, vec = processLine(line)
-            try:
-                display.append(pool.index(dis))
-            except ValueError:
-                continue
+            dis, cli, vec,p = processLine(line)
+            display.append(dis)
             click.append(cli)
-            user_vec.append(vec) 
+            user_vec.append(vec)
+            pool.append(p)
     return display,click,user_vec,pool
 
 def get_pool(file):
@@ -70,8 +64,8 @@ def processLine(line):
     user_vec=np.zeros(USER_VEC_SIZE)
     for i in user:
         user_vec[i-1]=1
-        
-    return display,click,user_vec
+    pool = np.array([int(i[3:-1]) for i in regions[2:]])
+    return display,click,user_vec,pool
 
 def rewrite(data_dir,i):
     '''
@@ -122,6 +116,8 @@ if __name__=='__main__':
     data_dir = "ydata-fp-td-clicks-v2_0.20111003"
     rewrite(data_dir,200000)
     display,click,user_vec,pool = load_data("rewrite.txt")
+
+    
     dump_to_file(display,click,user_vec,pool)
 
     display,click,user_vec,pool=load_from_dump()

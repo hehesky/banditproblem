@@ -54,24 +54,28 @@ class Bagging(object):
 
 if __name__ =="__main__":
     from LinUCB import LinUCB
+    from Statistic import Statistic
     import Data
     display,click,user_vec,pool=Data.load_from_dump()
     pool_size=len(pool)
     data_size=len(display)
     print("pool_size= {}, data_size={}".format(pool_size,data_size))
-    agents=[LinUCB(pool_size,Data.USER_VEC_SIZE) for i in range(3)]
+    agents=[Statistic(pool_size,Data.USER_VEC_SIZE)]# for i in range(3)]
     bag=Bagging(agents)
 
+    tuning_factor=0.001
+    tuning_size=int(data_size*tuning_factor)
+    print "tuning"
     #tuning phase
-    for i in range(20):
+    for i in range(tuning_size):
         
         bag.train(user_vec[i],display[i],click[i])
-
-    for i in range(20,10000):
+    print "Predicting"
+    for i in range(tuning_size,data_size):
         bag.predict_and_learn(user_vec[i],display[i],click[i])
 
     #report
-    avg_reward=sum(bag.reward_history)/len(bag.reward_history)
+    avg_reward=sum(bag.reward_history)*1.0/len(bag.reward_history)
     print "Average reward = {}".format(avg_reward)
 
     print "Valid events: {}".format(bag.valid_entry)
