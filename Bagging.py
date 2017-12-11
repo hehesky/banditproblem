@@ -54,9 +54,9 @@ class Bagging(object):
 
 class HybridBagging(Bagging):
     def __init__(self,agents):
-        Bagging.__init__(agents)
+        Bagging.__init__(self,agents)
 
-    def train(self,context,articlID,reward):
+    def train(self,context,articleID,reward):
         for agent in self.agents:
             agent.learn(context,articleID,reward)
     
@@ -75,19 +75,19 @@ if __name__ =="__main__":
 
     tuning_factor=0.001
     tuning_size=int(data_size*tuning_factor)
-    print "tuning"
+    print("tuning")
     #tuning phase
     for i in range(tuning_size):
         
         bag.train(user_vec[i],display[i],click[i])
-    print "Predicting"
+    print("Predicting")
     for i in range(tuning_size,data_size):
         bag.predict_and_learn(user_vec[i],display[i],click[i])
 
     #report
     avg_reward=sum(bag.reward_history)*1.0/len(bag.reward_history)
-    print "Average reward = {}".format(avg_reward)
+    print("Average reward = {}".format(avg_reward))
 
-    print "Valid events: {}".format(bag.valid_entry)
+    print("Valid events: {}".format(bag.valid_entry))
     
     
