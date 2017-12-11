@@ -8,7 +8,7 @@ class Bagging(object):
         self.valid_entry=0
         self.reward_history=[]
 
-    def predict_and_learn(self,context,articleID,reward):
+    def predict_and_learn(self,context,articleID,reward,pool):
         '''
         (1darray, int, int) -> None
         @param
@@ -24,7 +24,7 @@ class Bagging(object):
         Then one of the agents is trained, round-robin style
         '''
         #all agents cast votes based on context 
-        votes=np.array([agent.predict(context) for agent in self.agents])
+        votes=np.array([agent.predict(context,pool) for agent in self.agents])
         counts=np.bincount(votes)
         prediction=choice(np.flatnonzero(counts == counts.max()))
 
@@ -51,6 +51,16 @@ class Bagging(object):
         if self.cur_agent>=self.agent_num:
             self.cur_agent=0
 
+
+class HybridBagging(Bagging):
+    def __init__(self,agents):
+        Bagging.__init__(agents)
+
+    def train(self,context,articlID,reward):
+        for agent in self.agents:
+            agent.learn(context,articleID,reward)
+    
+    
 
 if __name__ =="__main__":
     from LinUCB import LinUCB

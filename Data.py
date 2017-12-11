@@ -204,14 +204,8 @@ def get_batched_data(batch_num,dump_folder='data'):
 
 if __name__=='__main__':
 
-    data_dir ="data.txt" #"ydata-fp-td-clicks-v2_0.20111003"
+    data_dir ="ydata-fp-td-clicks-v2_0.20111003"
     #rewrite(data_dir,200000)
-    n=process_large_data(data_dir,batch_size=100,dump_folder='batch')
+    n=process_large_data(data_dir,batch_size=200000,dump_folder='batch')
     print(n)
-    data_gen=get_batched_data(n,dump_folder='batch')
-    count=0
-    for (display,click,user_vec,pool) in data_gen:
-        count+=1
-        if click>0:
-            print(click)
-    print(count)
+    
