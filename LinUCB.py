@@ -27,7 +27,8 @@ class LinUCB(object): #with disjoint linear models
 
             theta=np.linalg.solve(self.A[id],self.b[id])#theta=inv(A)*b
             confidence_bound=self.c*np.sqrt(np.dot(context,np.linalg.solve(self.A[id],context)))
-            p[pool.index(id)]=np.dot(theta.T,context)+confidence_bound
+            index,=np.where(pool==id)
+            p[index]=np.dot(theta.T,context)+confidence_bound
         decision=choice(np.flatnonzero(p == p.max()))
         return pool[decision]
     

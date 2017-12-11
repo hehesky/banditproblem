@@ -36,19 +36,6 @@ def get_pool(file):
     pool = [int(i[3:-1]) for i in regions[2:]]
     return pool
 
-def process_line(file_line,pool):
-    '''
-    pool[str list]: list of article ID
-    data_dir: director path of data
-    return->Tuple(display,click,user_vec,pool):
-        dis[str]: the article ID present
-        cli[int]: if the presented article is clicked, return 0, otherwise, return 1
-        vec[1D-array]: user feature vector
-    '''    
-    dis, cli, vec = processLine(file_line)
-    dis = pool.index(dis)
-    return dis, cli, vec
-
 def processLine(line):
     regions=line.split('|')
     seg=regions[0].split(' ')
@@ -111,6 +98,107 @@ def load_from_dump(base_dir='tmp'):
     user_vec=np.load(user_path)
     pool=np.load(pool_path)
     return display,click,user_vec,pool
+
+def process_large_data(data_dir,batch_size=200000,dump_folder='data'):
+    '''Process a large data file (>200k lines) and dump them as npy files in batches
+    
+    @param
+    data_dir -> [str] path to the data file for processing
+    batch_size -> [int] number of entries one batch can contain. Default to 200k
+    dump_folder -> [str] name of folder where dumps are saved
+
+    '''
+    batch_count=0
+    item_count=0
+    display = []
+    click = []
+    user_vec = []
+    pool = []
+    with open(data_dir) as file:
+        for line in file:
+            dis, cli, vec,p = processLine(line)
+            display.append(dis)
+            click.append(cli)
+            user_vec.append(vec)
+            pool.append(p)
+            item_count+=1
+            if item_count >= batch_size:
+                #dump current
+                print("saving batch #{}".format(batch_count))
+                display_path=os.path.join(data_dir,'display'+str(batch_count))
+                np.save(display_path,display)
+
+                click_path=os.path.join(data_dir,'click'+str(batch_count))
+                np.save(click_path,click)
+
+                user_path=os.path.join(data_dir,'user'+str(batch_count))
+                np.save(user_path,user_vec)
+
+                pool_path=os.path.join(data_dir,'pool'+str(batch_count))
+                np.save(pool_path,pool)
+                display = []
+                click = []
+                user_vec = []
+                pool = []
+                batch_count+=1
+    if display:
+        print("saving batch #{}".format(batch_count))
+        display_path=os.path.join(data_dir,'display'+str(batch_count))
+        np.save(display_path,display)
+
+        click_path=os.path.join(data_dir,'click'+str(batch_count))
+        np.save(click_path,click)
+
+        user_path=os.path.join(data_dir,'user'+str(batch_count))
+        np.save(user_path,user_vec)
+
+        pool_path=os.path.join(data_dir,'pool'+str(batch_count))
+        np.save(pool_path,pool)
+
+def load_batch(n,dump_folder):
+    display_path=os.path.join(base_dir,'display'+str(n)+'.npy')
+    click_path=os.path.join(base_dir,'click'+str(n)+'.npy')
+    user_path=os.path.join(base_dir,'user'+str(n)+'.npy')
+    pool_path=os.path.join(base_dir,'pool'+str(n)+'.npy')
+    display=np.load(display_path)
+    click=np.load(click_path)
+    user_vec=np.load(user_path)
+    pool=np.load(pool_path)
+    return display,click,user_vec,pool
+
+def get_batched_data(batch_num,dump_folder='data'):
+    '''A generator that load data from dump and yield one line of data at a time
+    @param
+    batch_num -> [int] total number of batches to read
+    dump_foler -> [str] folder where the dumped files are. Default to "data"
+
+    @yield
+    yields a tuple with 4 elements (display,click,user_vec,pool), as numpy arrays
+
+    Usage:
+    data_gen=get_batched_data(n)
+    for (display,click,user_vec,pool) in data_gen:
+        #do something with current data
+    '''
+    assert batch_num>0
+    if os.path.isdir(dump_folder) is False:
+        raise ValueError("Invalide Dump folder")
+    batch_count=0
+    item_count=0
+    #load batch 0
+    display,click,user_vec,pool=load_batch(0,dump_folder)
+    
+    while batch_count<batch_num:
+        yield display[item_count],click[item_count],user_vec[item_count],pool[item_count]
+        item_count+=1
+        if item_count>=len(display):
+            #get next batch
+            batch_count+=1
+            item_count=0
+            display,click,user_vec,pool=load_batch(0,dump_folder)
+        
+
+
 if __name__=='__main__':
 
     data_dir = "ydata-fp-td-clicks-v2_0.20111003"
