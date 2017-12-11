@@ -13,6 +13,6 @@ for i in range(data_size):
         record.append(click[i])
     linucb.learn(user_vec[i],display[i],click[i])
 
-print "Total valid events: {}".format(len(record))
-print "Total Reward : {}".format(sum(record))
+print ("Total valid events: {}".format(len(record)))
+print ("Total Reward : {}".format(sum(record)))
 
