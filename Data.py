@@ -114,6 +114,8 @@ def process_large_data(data_dir,batch_size=200000,dump_folder='data'):
     click = []
     user_vec = []
     pool = []
+    if os.path.isdir(dump_folder) is False:
+        os.mkdir(dump_folder)
     with open(data_dir) as file:
         for line in file:
             dis, cli, vec,p = processLine(line)
@@ -125,41 +127,42 @@ def process_large_data(data_dir,batch_size=200000,dump_folder='data'):
             if item_count >= batch_size:
                 #dump current
                 print("saving batch #{}".format(batch_count))
-                display_path=os.path.join(data_dir,'display'+str(batch_count))
+                display_path=os.path.join(dump_folder,'display'+str(batch_count))
                 np.save(display_path,display)
 
-                click_path=os.path.join(data_dir,'click'+str(batch_count))
+                click_path=os.path.join(dump_folder,'click'+str(batch_count))
                 np.save(click_path,click)
 
-                user_path=os.path.join(data_dir,'user'+str(batch_count))
+                user_path=os.path.join(dump_folder,'user'+str(batch_count))
                 np.save(user_path,user_vec)
 
-                pool_path=os.path.join(data_dir,'pool'+str(batch_count))
+                pool_path=os.path.join(dump_folder,'pool'+str(batch_count))
                 np.save(pool_path,pool)
                 display = []
                 click = []
                 user_vec = []
                 pool = []
                 batch_count+=1
+                item_count=0
     if display:
         print("saving batch #{}".format(batch_count))
-        display_path=os.path.join(data_dir,'display'+str(batch_count))
+        display_path=os.path.join(dump_folder,'display'+str(batch_count))
         np.save(display_path,display)
 
-        click_path=os.path.join(data_dir,'click'+str(batch_count))
+        click_path=os.path.join(dump_folder,'click'+str(batch_count))
         np.save(click_path,click)
 
-        user_path=os.path.join(data_dir,'user'+str(batch_count))
+        user_path=os.path.join(dump_folder,'user'+str(batch_count))
         np.save(user_path,user_vec)
 
-        pool_path=os.path.join(data_dir,'pool'+str(batch_count))
+        pool_path=os.path.join(dump_folder,'pool'+str(batch_count))
         np.save(pool_path,pool)
-
+    return batch_count
 def load_batch(n,dump_folder):
-    display_path=os.path.join(base_dir,'display'+str(n)+'.npy')
-    click_path=os.path.join(base_dir,'click'+str(n)+'.npy')
-    user_path=os.path.join(base_dir,'user'+str(n)+'.npy')
-    pool_path=os.path.join(base_dir,'pool'+str(n)+'.npy')
+    display_path=os.path.join(dump_folder,'display'+str(n)+'.npy')
+    click_path=os.path.join(dump_folder,'click'+str(n)+'.npy')
+    user_path=os.path.join(dump_folder,'user'+str(n)+'.npy')
+    pool_path=os.path.join(dump_folder,'pool'+str(n)+'.npy')
     display=np.load(display_path)
     click=np.load(click_path)
     user_vec=np.load(user_path)
@@ -201,12 +204,8 @@ def get_batched_data(batch_num,dump_folder='data'):
 
 if __name__=='__main__':
 
-    data_dir = "ydata-fp-td-clicks-v2_0.20111003"
-    rewrite(data_dir,200000)
-    display,click,user_vec,pool = load_data("rewrite.txt")
-
-    
-    dump_to_file(display,click,user_vec,pool)
-
-    display,click,user_vec,pool=load_from_dump()
+    data_dir ="ydata-fp-td-clicks-v2_0.20111003"
+    #rewrite(data_dir,200000)
+    n=process_large_data(data_dir,batch_size=200000,dump_folder='batch')
+    print(n)
     
