@@ -78,7 +78,7 @@ class Sep_test(object):
 
 print("==START==")
 start_time = time.time()
-data_dir = 'ydata-fp-td-clicks-v2_0.20111003'#'rewrite.txt'
+data_dir = 'rewrite.txt'
 batch_num = Data.process_large_data(data_dir)
 data_gen=Data.get_batched_data(min(batch_num,3))
 print("done processing data file")
