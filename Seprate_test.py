@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Dec 11 22:19:39 2017
+
+@author: sxy52
+"""
 from LinUCB import LinUCB
 from LTS import LTS
 from Statistic import Statistic
-
-from numpy.random import choice
 import numpy as np
-import Bagging
 import Data
 import plot
 import time
@@ -22,16 +25,12 @@ class Sep_test(object):
         self.his_linucb = []
         self.his_lts = []
         self.his_stat = []
-        self.his_hybrid = []
         self.valid_linucb = 0
         self.valid_lts = 0
         self.valid_stat = 0
-        self.valid_hybrid = 0
-        self.vote = []
         
     def LinUCB_predict_and_learn(self,context,articleID,reward,pool):
         prediction = self.linucb.predict(context,pool)
-        self.vote.append(prediction)
         #update records
         if prediction==articleID:
             self.his_linucb.append(reward)
@@ -41,7 +40,6 @@ class Sep_test(object):
         
     def lts_predict_and_learn(self,context,articleID,reward,pool):
         prediction = self.lts.predict(context,pool)
-        self.vote.append(prediction)
         #update records
         if prediction==articleID:
             self.his_lts.append(reward)
@@ -51,7 +49,6 @@ class Sep_test(object):
         
     def stat_predict_and_learn(self,context,articleID,reward,pool):
         prediction = self.stat.predict(context,pool)
-        self.vote.append(prediction)
         #update records
         if prediction==articleID:
             self.his_stat.append(reward)
@@ -63,16 +60,7 @@ class Sep_test(object):
         self.LinUCB_predict_and_learn(context,articleID,reward,pool)
         self.lts_predict_and_learn(context,articleID,reward,pool)
         self.stat_predict_and_learn(context,articleID,reward,pool)
-        
-    def Hybrid_predict_and_learn(self,context,articleID,reward,pool):
-        self.predict_and_learn(context,articleID,reward,pool)
-        counts=np.bincount(self.vote)
-        prediction=choice(np.flatnonzero(counts == counts.max()))
 
-        #update records
-        if prediction==articleID:
-            self.his_hybrid.append(reward)
-            self.valid_hybrid+=1
 
 print("==START==")
 start_time = time.time()
@@ -88,10 +76,8 @@ stat = Statistic(Data.USER_VEC_SIZE)
 agents.append(linucb)
 agents.append(lts)
 agents.append(stat)
-hybrid = Bagging.HybridBagging(agents)
 
 agents=[LinUCB(Data.USER_VEC_SIZE) for i in range(3)]+[LTS(Data.USER_VEC_SIZE) for i in range(3)]+[Statistic(Data.USER_VEC_SIZE) for i in range(3)]
-bag=Bagging.Bagging(agents)
 seprate_test = Sep_test(Data.USER_VEC_SIZE)
 print("Computation starts")
 
@@ -101,14 +87,15 @@ for (display,click,user_vec,pool) in data_gen:
     #do something with current data
     total_data+=1
     total_click+=click
-    seprate_test.Hybrid_predict_and_learn(user_vec,display,click,pool)
+    seprate_test.LinUCB_predict_and_learn(user_vec,display,click,pool)
+    seprate_test.lts_predict_and_learn(user_vec,display,click,pool)
+    seprate_test.stat_predict_and_learn(user_vec,display,click,pool)
 
 total_crt=total_click*1.0/total_data
 print(total_crt)
 record_linucb = seprate_test.his_linucb
 record_lts = seprate_test.his_lts
 record_stat = seprate_test.his_stat
-record_hybrid=seprate_test.his_hybrid
 print("Done computation")
 
 
@@ -120,12 +107,13 @@ avg_lts=plot.cumulative_avg(record_lts)/total_crt
 np.savetxt('lts.csv',avg_lts,delimiter=',')
 avg_stat=plot.cumulative_avg(record_stat)/total_crt
 np.savetxt('stat.csv',avg_stat,delimiter=',')
+avg_bag=plot.cumulative_avg(record_bag)/total_crt
 
 plot.plot_avg(
-    (avg_hybrid,avg_linucb,avg_lts,avg_stat),
+    (avg_hybrid,avg_linucb,avg_lts,avg_stat,avg_bag),
     title="Average Reward",
     filename='plot.png',
-    legend=['hybrid','linucb','lts','stat'],
+    legend=['hybrid','linucb','lts','stat','bagging'],
     xlabel="Sample Size",
     ylabel="Average Reward")
 
