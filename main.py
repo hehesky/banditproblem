@@ -5,6 +5,7 @@ import numpy as np
 import Bagging
 import Data
 import plot
+import time
 class Sep_test(object):
     def __init__(self,feature_size):
         '''
@@ -55,9 +56,10 @@ class Sep_test(object):
         self.stat_predict_and_learn(context,articleID,reward,pool)
 
 print("==START==")
+start_time = time.time()
 data_dir = 'ydata-fp-td-clicks-v2_0.20111003'#'rewrite.txt'
 batch_num = Data.process_large_data(data_dir)
-data_gen=Data.get_batched_data(batch_num)
+data_gen=Data.get_batched_data(min(batch_num,3))
 print("done processing data file")
 
 agents = []
@@ -111,3 +113,7 @@ plot.plot_avg(
     legend=['hybrid','linucb','lts','stat','bagging'],
     xlabel="Sample Size",
     ylabel="Average Reward")
+
+end_time=time.time()
+time_used=end_time-start_time
+print("Total time used: {}".format(time_used))
