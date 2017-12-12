@@ -3,7 +3,7 @@ from LTS import LTS
 from Statistic import Statistic
 import Bagging
 import Data
-
+import plot
 class Sep_test(object):
     def __init__(self,feature_size):
         '''
@@ -19,7 +19,7 @@ class Sep_test(object):
         self.his_stat = []
         self.valid_linucb = 0
         self.valid_lts = 0
-        self.stat = 0
+        self.valid_stat = 0
         
     def LinUCB_predict_and_learn(self,context,articleID,reward,pool):
         prediction = self.linucb.predict(context,pool)
@@ -52,28 +52,13 @@ class Sep_test(object):
         self.LinUCB_predict_and_learn(context,articleID,reward,pool)
         self.lts_predict_and_learn(context,articleID,reward,pool)
         self.stat_predict_and_learn(context,articleID,reward,pool)
-'''
-display,click,user_vec,pool=Data.load_from_dump()
-data_size=len(display)
-print("data_size={}".format(data_size))
-print("total clicks = {}".format(sum(click)))
-#set up algo
-linucb = LinUCB(Data.USER_VEC_SIZE)
-record=[]
-for i in range(data_size):
-    pred=linucb.predict(user_vec[i],pool[i])
-    if pred==display[i]:
-        record.append(click[i])
-    linucb.learn(user_vec[i],display[i],click[i])
 
-print ("Total valid events: {}".format(len(record)))
-print ("Total Reward : {}".format(sum(record)))
-'''
-data_dir = ''
+
+data_dir = 'data.txt'
 batch_num = Data.process_large_data(data_dir)
 data_gen=Data.get_batched_data(batch_num)
+print("done processing data file")
 
-record=[]
 agents = []
 linucb=LinUCB(Data.USER_VEC_SIZE)
 lts=LTS(Data.USER_VEC_SIZE)
@@ -82,17 +67,33 @@ agents.append(linucb)
 agents.append(lts)
 agents.append(stat)
 hybrid = Bagging.HybridBagging(agents)
+
+agents=[LinUCB(Data.USER_VEC_SIZE) for i in range(3)]+[LTS(Data.USER_VEC_SIZE) for i in range(3)]+[Statistic(Data.USER_VEC_SIZE) for i in range(3)]
+bag=Bagging.Bagging(agents)
 seprate_test = Sep_test(Data.USER_VEC_SIZE)
+print("Computation starts")
+
+total_click=0
+total_data=0#count data entries
 for (display,click,user_vec,pool) in data_gen:
     #do something with current data
+    total_data+=1
+    total_click+=click
+    bag.predict_and_learn(user_vec,display,click,pool)
     hybrid.predict_and_learn(user_vec,display,click,pool)
     seprate_test.predict_and_learn(user_vec,display,click,pool)
-record = hybrid.reward_history
+
+total_crt=total_click*1.0/total_data
+
+record_hybrid = hybrid.reward_history
 record_linucb = seprate_test.his_linucb
 record_lts = seprate_test.his_lts
 record_stat = seprate_test.his_stat
+print("Done computation")
 
-print ("Total valid events: {}".format(len(record)))
-print ("Total Reward : {}".format(sum(record)))
+avg_hybrid=plot.cumulative_avg(record_hybrid)/total_crt
+avg_linucb=plot.cumulative_avg(record_linucb)/total_crt
+avg_lts=plot.cumulative_avg(record_lts)/total_crt
+avg_stat=plot.cumulative_avg(record_stat)/total_crt
 
-
+plot.plot_avg((avg_hybrid,avg_linucb,avg_lts,avg_stat),title="Average Reward",filename='plot.png',legend=['hybrid','linucb','lts','stat'],xlabel="Sample Size",ylabel="Average Reward")

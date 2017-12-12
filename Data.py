@@ -157,7 +157,7 @@ def process_large_data(data_dir,batch_size=200000,dump_folder='data'):
 
         pool_path=os.path.join(dump_folder,'pool'+str(batch_count))
         np.save(pool_path,pool)
-    return batch_count
+    return batch_count+1
 def load_batch(n,dump_folder):
     display_path=os.path.join(dump_folder,'display'+str(n)+'.npy')
     click_path=os.path.join(dump_folder,'click'+str(n)+'.npy')
@@ -206,6 +206,6 @@ if __name__=='__main__':
 
     data_dir ="ydata-fp-td-clicks-v2_0.20111003"
     #rewrite(data_dir,200000)
-    n=process_large_data(data_dir,batch_size=200000,dump_folder='batch')
-    print(n)
+    data_gen=get_batched_data(1)
+    print data_gen.next()
     

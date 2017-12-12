@@ -13,7 +13,7 @@ def cumulative_avg(reward_record):
     cum_sum=np.cumsum(reward_record)
     indices=np.array(range(1,len(reward_record)+1))
     cum_avg=cum_sum*1.0/indices
-    return cum_avg
+    return np.array(cum_avg)
 
 def plot_avg(cum_avgs,title="Plot",filename=None,folder=None,legend=None,xlabel=None,ylabel=None):
     
