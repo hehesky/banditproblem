@@ -92,31 +92,33 @@ for (display,click,user_vec,pool) in data_gen:
     #do something with current data
     total_data+=1
     total_click+=click
-    seprate_test.Hybrid_predict_and_learn(user_vec,display,click,pool)
+    #seprate_test.Hybrid_predict_and_learn(user_vec,display,click,pool)
+    seprate_test.LinUCB_predict_and_learn(user_vec,display,click,pool)
+    seprate_test.stat_predict_and_learn(user_vec,display,click,pool)
 
 total_crt=total_click*1.0/total_data
 print(total_crt)
 record_linucb = seprate_test.his_linucb
-record_lts = seprate_test.his_lts
+#record_lts = seprate_test.his_lts
 record_stat = seprate_test.his_stat
-record_hybrid=seprate_test.his_hybrid
+#record_hybrid=seprate_test.his_hybrid
 print("Done computation")
 
 
-avg_hybrid=plot.cumulative_avg(record_hybrid)/total_crt
-np.savetxt("hybrid.csv",avg_hybrid,delimiter=',')
+#avg_hybrid=plot.cumulative_avg(record_hybrid)/total_crt
+#np.savetxt("hybrid.csv",avg_hybrid,delimiter=',')
 avg_linucb=plot.cumulative_avg(record_linucb)/total_crt
 np.savetxt("linucb.csv",avg_linucb,delimiter=',')
-avg_lts=plot.cumulative_avg(record_lts)/total_crt
-np.savetxt('lts.csv',avg_lts,delimiter=',')
+#avg_lts=plot.cumulative_avg(record_lts)/total_crt
+#np.savetxt('lts.csv',avg_lts,delimiter=',')
 avg_stat=plot.cumulative_avg(record_stat)/total_crt
 np.savetxt('stat.csv',avg_stat,delimiter=',')
 
 plot.plot_avg(
-    (avg_hybrid,avg_linucb,avg_lts,avg_stat),
+    (avg_linucb,avg_stat),
     title="Average Reward",
     filename='plot.png',
-    legend=['hybrid','linucb','lts','stat'],
+    legend=['linucb','stat'],
     xlabel="Sample Size",
     ylabel="Average Reward")
 
