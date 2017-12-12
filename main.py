@@ -1,6 +1,7 @@
 from LinUCB import LinUCB
 from LTS import LTS
 from Statistic import Statistic
+import numpy as np
 import Bagging
 import Data
 import plot
@@ -53,8 +54,8 @@ class Sep_test(object):
         self.lts_predict_and_learn(context,articleID,reward,pool)
         self.stat_predict_and_learn(context,articleID,reward,pool)
 
-
-data_dir = 'data.txt'
+print("==START==")
+data_dir = 'ydata-fp-td-clicks-v2_0.20111003'#'rewrite.txt'
 batch_num = Data.process_large_data(data_dir)
 data_gen=Data.get_batched_data(batch_num)
 print("done processing data file")
@@ -84,16 +85,29 @@ for (display,click,user_vec,pool) in data_gen:
     seprate_test.predict_and_learn(user_vec,display,click,pool)
 
 total_crt=total_click*1.0/total_data
-
+print(total_crt)
 record_hybrid = hybrid.reward_history
 record_linucb = seprate_test.his_linucb
 record_lts = seprate_test.his_lts
 record_stat = seprate_test.his_stat
+record_bag=bag.reward_history
 print("Done computation")
 
-avg_hybrid=plot.cumulative_avg(record_hybrid)/total_crt
-avg_linucb=plot.cumulative_avg(record_linucb)/total_crt
-avg_lts=plot.cumulative_avg(record_lts)/total_crt
-avg_stat=plot.cumulative_avg(record_stat)/total_crt
 
-plot.plot_avg((avg_hybrid,avg_linucb,avg_lts,avg_stat),title="Average Reward",filename='plot.png',legend=['hybrid','linucb','lts','stat'],xlabel="Sample Size",ylabel="Average Reward")
+avg_hybrid=plot.cumulative_avg(record_hybrid)/total_crt
+np.savetxt("hybrid.csv",avg_hybrid,delimiter=',')
+avg_linucb=plot.cumulative_avg(record_linucb)/total_crt
+np.savetxt("linucb.csv",avg_linucb,delimiter=',')
+avg_lts=plot.cumulative_avg(record_lts)/total_crt
+np.savetxt('lts.csv',avg_lts,delimiter=',')
+avg_stat=plot.cumulative_avg(record_stat)/total_crt
+np.savetxt('stat.csv',avg_stat,delimiter=',')
+avg_bag=plot.cumulative_avg(record_bag)/total_crt
+
+plot.plot_avg(
+    (avg_hybrid,avg_linucb,avg_lts,avg_stat,avg_bag),
+    title="Average Reward",
+    filename='plot.png',
+    legend=['hybrid','linucb','lts','stat','bagging'],
+    xlabel="Sample Size",
+    ylabel="Average Reward")
