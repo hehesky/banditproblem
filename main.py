@@ -73,6 +73,8 @@ class Sep_test(object):
         if prediction==articleID:
             self.his_hybrid.append(reward)
             self.valid_hybrid+=1
+            
+        self.vote=[]
 
 print("==START==")
 start_time = time.time()
@@ -81,17 +83,6 @@ batch_num = Data.process_large_data(data_dir)
 data_gen=Data.get_batched_data(min(batch_num,3))
 print("done processing data file")
 
-agents = []
-linucb=LinUCB(Data.USER_VEC_SIZE)
-lts=LTS(Data.USER_VEC_SIZE)
-stat = Statistic(Data.USER_VEC_SIZE)
-agents.append(linucb)
-agents.append(lts)
-agents.append(stat)
-hybrid = Bagging.HybridBagging(agents)
-
-agents=[LinUCB(Data.USER_VEC_SIZE) for i in range(3)]+[LTS(Data.USER_VEC_SIZE) for i in range(3)]+[Statistic(Data.USER_VEC_SIZE) for i in range(3)]
-bag=Bagging.Bagging(agents)
 seprate_test = Sep_test(Data.USER_VEC_SIZE)
 print("Computation starts")
 
