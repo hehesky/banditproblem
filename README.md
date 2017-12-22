@@ -1,11 +1,8 @@
-# banditproblem
-A study on Contextual Multi-armed bandit problem with linear payoffs
+# Bandit Problem
+A study on Contextual Multi-armed bandit problem, simulated by offline evaluation
 ## Members
 * K.Zhou
 * X.Sun
 
 
-LinUCB
-Thompson Sampling
-Statistics
-Round-Robin Learning
+
